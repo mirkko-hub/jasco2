@@ -1,0 +1,123 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# jasco2
+
+__Warning: This package is still under development !__
+
+A package for easy Spectrophotometer data handling.
+
+## Installation
+
+You can install the released version of jasco2 from GitHub.
+
+```{r installation, eval = FALSE}
+# should not work, since the repo is private
+devtools::install_github("mirkko-hub/jasco2")
+```
+
+## Example
+
+Easy data handling of Jasco spectrophotometer (JASCO Corp., V-560, Rev. 1.00) files - you only need three things:
+
+* __data__ _(.txt output from spectrophotometer)_
+* __design__ _(record of individual files and grouping information + optional flagging for removal, notes)_
+* __treatmemt__ _(additional information specifying the different groups)_
+
+
+##### Import files
+
+```{r}
+library(tidyverse, warn.conflicts = FALSE)
+library(magrittr, warn.conflicts = FALSE)
+library(jasco2)
+```
+
+
+_Given a bunch of .txt files from Jasco Spec,_
+```{r import_1, echo = TRUE}
+files <- system.file("extdata", paste0(1:28, ".txt") , package = "jasco2", mustWork = TRUE)
+head(files)
+```
+
+_... some design tibble,_
+```{r import_2, echo = TRUE}
+design <- readr::read_csv(system.file("extdata", "design.csv", package = "jasco2", mustWork = TRUE))
+head(design)
+```
+_... and and a treatment tibble,_
+```{r import_3, echo = TRUE}
+treatment <- readr::read_csv(system.file("extdata", "treatment.csv", package = "jasco2", mustWork = TRUE))
+head(treatment)
+```
+
+_we can easily combine all information in a tidy tibble, that facilitates further analysis!_
+```{r tibble, echo = TRUE}
+df <- jasco_tibble(filenames = files, design, treatment, rmflag = FALSE, rmblank = TRUE)
+head(df)
+```
+
+
+
+##### Process data
+
+In the given example, we performed an enzyme coupled ATP hydrolysis assay.
+So we measured NADH oxidation (the consumption of NADH is recorded at 340 nm) as a response to ATP hydrolysis via the depicted reaction -
+each oxidized NADH molecule reports the hydrolysis of one molecule of ATP.
+
+Let's say we want to calculate turnover rates of the ATPase of interest.
+All we need to do is:
+
+* convert absorbance units into concentration
+* apply a linear model (with customized interval, response and predictor variables)
+* extract the slopes (estimates) for all reaction
+* and convert these into turnover rates
+
+_(with optional summary by specified groups)_
+
+__like so:__
+
+```{r process}
+data <- df %>%
+  convert_absorbance(., "NADH") %>%
+  jasco_extract_lm(., response = NADH, predictor = Time_s, min = 75, max = 175)
+head(data)
+  
+params <- data %>%
+  jasco_extract_params(., .bgcorr = FALSE, .protein_uM = 6, .unit = "sec", .factor = -1, Group)
+head(params$data)
+head(params$summary)
+```
+
+##### Plot data
+
+```{r plot_lm}
+ggplot() +
+  geom_point(data = data %>% unnest(data) %>% filter(., Label != "Control"),
+             mapping = aes(x = Time_s, y = NADH), size = 0.1) +
+  geom_path(data = data %>% unnest(augment) %>% filter(., Label != "Control"),
+            mapping = aes(x = Time_s, y = .fitted, group = Exp_ID), colour = "green") +
+  facet_grid(Label ~ Protein) +
+  theme_classic()
+```
+
+
+```{r plot_turnover}
+ggplot() +
+  geom_boxplot(data = params$data %>% filter(Label != "Control"), aes(x = Label, y = turnover, colour = Protein)) +
+  geom_point(data = params$data %>% filter(Label != "Control"), aes(x = Label, y = turnover, colour = Protein)) +
+  facet_grid(. ~ Protein) +
+  ggsci::scale_color_npg() +
+  theme_classic()
+```

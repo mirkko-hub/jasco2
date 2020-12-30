@@ -1,0 +1,8 @@
+Group,Label,Protein
+A,Control,
+B,Condition 1,A
+C,Condition 2,A
+D,Condition 3,A
+E,Condition 1,B
+F,Condition 2,B
+G,Condition 3,B
