@@ -195,9 +195,8 @@ ggplot() +
   geom_point(data = data %>% unnest(data) %>% filter(., Label != "Control"),
              mapping = aes(x = Time_s, y = NADH), size = 0.1) +
   geom_path(data = data %>% unnest(augment) %>% filter(., Label != "Control"),
-            mapping = aes(x = Time_s, y = .fitted, group = Exp_ID), colour = "green") +
-  facet_grid(Label ~ Protein) +
-  theme_classic()
+            mapping = aes(x = Time_s, y = .fitted, group = Exp_ID), colour = "blue") +
+  facet_grid(Label ~ Protein)
 ```
 
 <img src="man/figures/README-plot_lm-1.png" width="100%" />
@@ -206,9 +205,7 @@ ggplot() +
 ggplot() +
   geom_boxplot(data = params$data %>% filter(Label != "Control"), aes(x = Label, y = turnover, colour = Protein)) +
   geom_point(data = params$data %>% filter(Label != "Control"), aes(x = Label, y = turnover, colour = Protein)) +
-  facet_grid(. ~ Protein) +
-  ggsci::scale_color_npg() +
-  theme_classic()
+  facet_grid(. ~ Protein)
 ```
 
 <img src="man/figures/README-plot_turnover-1.png" width="100%" />
