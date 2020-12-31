@@ -12,7 +12,6 @@ A package for easy Spectrophotometer data handling.
 You can install the released version of jasco2 from GitHub.
 
 ``` r
-# should not work, since the repo is private
 devtools::install_github("mirkko-hub/jasco2")
 ```
 
@@ -31,12 +30,12 @@ Rev. 1.00) files - you only need three things:
 
 ``` r
 library(tidyverse, warn.conflicts = FALSE)
-#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.2
 #> ✓ tidyr   1.1.2     ✓ stringr 1.4.0
 #> ✓ readr   1.4.0     ✓ forcats 0.5.0
-#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(magrittr, warn.conflicts = FALSE)
@@ -61,7 +60,7 @@ head(files)
 ``` r
 design <- readr::read_csv(system.file("extdata", "design.csv", package = "jasco2", mustWork = TRUE))
 #> 
-#> ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> cols(
 #>   Exp_ID = col_double(),
 #>   Group = col_character(),
@@ -85,7 +84,7 @@ head(design)
 ``` r
 treatment <- readr::read_csv(system.file("extdata", "treatment.csv", package = "jasco2", mustWork = TRUE))
 #> 
-#> ── Column specification ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Column specification ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> cols(
 #>   Group = col_character(),
 #>   Label = col_character(),

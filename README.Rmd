@@ -23,7 +23,6 @@ A package for easy Spectrophotometer data handling.
 You can install the released version of jasco2 from GitHub.
 
 ```{r installation, eval = FALSE}
-# should not work, since the repo is private
 devtools::install_github("mirkko-hub/jasco2")
 ```
 
